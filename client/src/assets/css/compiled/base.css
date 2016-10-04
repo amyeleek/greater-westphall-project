@@ -1,0 +1,26 @@
+.node {
+  stroke: #222;
+  stroke-width: 1.5px; }
+
+.node.actor {
+  fill: #888; }
+
+.node.movie {
+  fill: #BBB; }
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+  stroke-width: 1px; }
+
+html {
+  background-color: #FFF; }
+
+img {
+  width: 100%; }
+
+a {
+  text-decoration: none;
+  cursor: pointer; }
+
+/*# sourceMappingURL=base.css.map */
