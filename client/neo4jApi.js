@@ -4,19 +4,19 @@
  var neo4j = window.neo4j.v1;
  var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "fukkinnerds"));
 
- api.searchMedia = function(queryString) {
+ api.searchNode = function(type, queryString) {
   var session = driver.session();
+  var id = type == "Game" ? "title" : "name"
+  var query = "MATCH (node:"+ type +") \
+      WHERE node."+ id + "=~ {id} \
+      RETURN node"
   return session
-    .run(
-      'MATCH (media:Game) \
-      WHERE media.title =~ {title} \
-      RETURN media',
-      {title: '(?i).*' + queryString + '.*'}
+    .run(query, {id: '(?i).*' + queryString + '.*'}
     )
     .then(result => {
       session.close();
       return result.records.map(record => {
-        return new Media(record.get('media'));
+        return new Node(record.get('node'));
       });
     })
     .catch(error => {
@@ -24,31 +24,8 @@
       throw error;
     });
 }
-
-//this pisses me off
-//curry function? Yeah, probably eventually
-//should also come up with a better name than 'media' for that model
- api.searchChar = function(queryString) {
-  var session = driver.session();
-  return session
-    .run(
-      'MATCH (char:Character) \
-      WHERE char.name =~ {name} \
-      RETURN char',
-      {name: '(?i).*' + queryString + '.*'}
-    )
-    .then(result => {
-      session.close();
-      return result.records.map(record => {
-        return new Media(record.get('char'));
-      });
-    })
-    .catch(error => {
-      session.close();
-      throw error;
-    });
-}
-      
+     
+//need to figure out what I want to do with these 
 api.getMedia = function(title) {
   var session = driver.session();
   return session

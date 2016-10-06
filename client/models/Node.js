@@ -1,5 +1,5 @@
-function Media(node) {
-  //_.extend(this, _node.properties);
+//Yes, I know. It represents a node in the database. 
+function Node(node) {
 
   Object.keys(node.properties).forEach(function(k){
  	  this[k] = node.properties[k];
@@ -9,5 +9,3 @@ function Media(node) {
     this.id = this.id.toNumber();
   }
 }
-
-//module.exports = Media;
