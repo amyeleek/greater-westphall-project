@@ -76,34 +76,45 @@ api.getCharacter = function(name) {
     });
 }
 
-
+// MATCH (m:Game)<-[:APPEARED_IN]-(a:Character) \
+//     RETURN m.title AS media, collect(a.name) AS cast \
+//     LIMIT {limit}
 api.getGraph = function() {
   var session = driver.session();
   return session.run(
-    'MATCH (m:Game)<-[:APPEARED_IN]-(a:Character) \
-    RETURN m.title AS media, collect(a.name) AS cast \
-    LIMIT {limit}', {limit: 100})
+    //the second node is a mode SHUT UP
+    'MATCH (node)-[relate]->(mode) \
+     RETURN node,relate,mode \
+     LIMIT {limit}', {limit: 100})
     .then(results => {
       session.close();
       var nodes = [], rels = [], i = 0;
       results.records.forEach(res => {
-        nodes.push({title: res.get('media'), label: 'media'});
+        var node = res.get('node'); 
+        var title = node.properties.name ? node.properties.name : node.properties.title;
+        var insert = {title: title, label: node.labels[0], node: node}
+        var exists = nodes.indexOf(insert);
+        //this doesn't work and I'm mad
+        if (exists == -1) {
+          nodes.push(insert);
+        }
         var target = i;
         i++;
 
-        res.get('cast').forEach(name => {
-          var char = {title: name, label: 'character'};
-          var source = nodes.indexOf(char);
-          if (source == -1) {
-            nodes.push(char);
-            source = i;
-            i++;
-          }
-          rels.push({source, target})
-        })
+        // res.get('cast').forEach(name => {
+        //   var char = {title: name, label: 'character'};
+        //   var source = nodes.indexOf(char);
+        //   if (source == -1) {
+        //     nodes.push(char);
+        //     source = i;
+        //     i++;
+        //   }
+        //   rels.push({source, target})
+        // })
       });
+      console.log(nodes);
 
-      return {nodes, links: rels};
+      //return {nodes, links: rels};
     });
 }
 
