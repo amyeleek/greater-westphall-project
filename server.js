@@ -19,6 +19,7 @@ mongoose.connect(mongoURI);
 //setup middleware
 app.use(morgan('dev'));
 //setup routes
+
 // app.all('/', parseBearerAuth, function(req, res){
 //   console.log('req.userId', req.userId);
 //   res.send('HI!');
