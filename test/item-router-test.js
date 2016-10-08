@@ -11,7 +11,6 @@ const server = require('../server');
 const itemCrud = require('../lib/item-crud');
 request.use(superPromise);
 
-
 describe('testing module item-crud', function(){
   before((done) => {
     if(!server.isRunning){
