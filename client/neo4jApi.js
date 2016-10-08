@@ -79,6 +79,18 @@ api.getCharacter = function(name) {
 // MATCH (m:Game)<-[:APPEARED_IN]-(a:Character) \
 //     RETURN m.title AS media, collect(a.name) AS cast \
 //     LIMIT {limit}
+
+/* 
+  Need to refrence later characters back to media
+  Look up what each character's mode is
+  That goes in the rels array
+  Mode should have a number asociated with them? 
+
+  Every new node, look up the mode associated with it
+  Find that mode in the array
+  Push that to the rels array (node, mode's position in array)
+
+*/
 api.getGraph = function() {
   var session = driver.session();
   return session.run(
@@ -88,33 +100,34 @@ api.getGraph = function() {
      LIMIT {limit}', {limit: 100})
     .then(results => {
       session.close();
-      var nodes = [], rels = [], i = 0;
+      var nodes = [], rels = [], i = 0, target = 0, source = 0;
       results.records.forEach(res => {
         var node = res.get('node'); 
         var title = node.properties.name ? node.properties.name : node.properties.title;
-        var insert = {title: title, label: node.labels[0], node: node}
-        var exists = nodes.indexOf(insert);
-        //this doesn't work and I'm mad
+        var insert = {title: title, label: node.labels[0]}
+        var exists = nodes.map(function(e) { return e.title; }).indexOf(insert.title);
+
         if (exists == -1) {
           nodes.push(insert);
+          target = i;
+          i++;
         }
-        var target = i;
-        i++;
 
-        // res.get('cast').forEach(name => {
-        //   var char = {title: name, label: 'character'};
-        //   var source = nodes.indexOf(char);
-        //   if (source == -1) {
-        //     nodes.push(char);
-        //     source = i;
-        //     i++;
-        //   }
-        //   rels.push({source, target})
-        // })
+        var mode = res.get('mode');
+        var media = {title: mode.properties.title, label: mode.labels[0]};
+        var source = nodes.map(function(e) { return e.title; }).indexOf(media.title);
+        if (source == -1) {
+          nodes.push(media);
+          source = i;
+          i++;
+        }
+
+        rels.push({source, target})
       });
       console.log(nodes);
+      console.log(rels);
 
-      //return {nodes, links: rels};
+      return {nodes, links: rels};
     });
 }
 
