@@ -4,21 +4,31 @@
 	app.searchMedia = function(){
 		var queryString = $("#search").find("input[name=search]").val();
 
-		//do something useful here
-		return api.searchNode('Game', queryString);
+		//search to find information about one node and pass that to showMedia
+		api.searchNode('Media', queryString).then(node =>{
+			app.showMediaInfo(node);
+		});
 	}
 
-	app.showMedia = function(title) {
-	  api
-	    .getMedia(title)
-	    .then(media => {
-	      if (!media) return;
+	app.showMediaInfo = function(node) {
+
+		$results = $('#results');
+		node = node[0];
+
+		$results.children('tbody').append('<tr><td>'+node.title+'</td><td>'+node.type+'</td><td>'+node.released.low+'</td></tr>');
 
 		//bring up list of all the data we store about the media - the node, and the nearest neighbours
 		//also run a call to Wikipedia to get anything else useful
-	      console.log(media);
-		});
+		//https://en.wikipedia.org/w/api.php?action=query&titles=Main%20Page&prop=revisions&rvprop=content&format=json
+	    
+	    $.getJSON("https://en.wikipedia.org/w/api.php?action=query&titles="+node.title+"&prop=revisions&rvprop=content&format=json&callback=?", function(data){
+	    	console.log(data);
+	    })
+
 	}
+
+	//show graph of node and nearest neighbors
+	app.showMediaGraph = function(){}
 
 	app.renderGraph = function() {
 	  var width = 800, height = 800;
