@@ -2,10 +2,10 @@
   stroke: #222;
   stroke-width: 1.5px; }
 
-.node.actor {
+.node.Media {
   fill: #888; }
 
-.node.movie {
+.node.Character {
   fill: #BBB; }
 
 .link {

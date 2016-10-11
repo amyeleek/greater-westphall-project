@@ -1,0 +1,32 @@
+CREATE (PxZ:Media { title: 'Project X Zone', type: 'Game', released: 2012})
+CREATE (EndFron:Media { title: 'Super Robot Taisen OG Saga: Endless Frontier', type: 'Game', released: 2008})
+CREATE (hack:Media { title: '.hack', type: 'Game', released: 2002})
+CREATE (ToV:Media { title: 'Tales of Vesperia', type: 'Game', released: 2008})
+CREATE (Tek:Media { title: 'Tekken', type: 'Game', released: 1994})
+
+CREATE (Haken:Character { name: 'Haken Browning', origin: 'Endless Frontier'})
+CREATE (Kaguya:Character { name: 'Kaguya Nanbu', origin: 'Endless Frontier'})
+CREATE (Kite:Character { name: 'Kite', origin: '.hack'})
+CREATE (BR:Character { name: 'BlackRose', origin: '.hack'})
+CREATE (Jin:Character { name: 'Jin Kazama', origin: 'Tekken'})
+CREATE (Xiao:Character { name: 'Ling Xiaoyu', origin: 'Tekken'})
+CREATE (Yuri:Character { name: 'Yuri Lowell', origin: 'Tales of Vesperia'})
+CREATE (Est:Character { name: 'Estellise Sidos Heurassein', origin: 'Tales of Vesperia'})
+
+CREATE
+  (Haken)-[:APPEARS_IN]->(PxZ),
+  (Kaguya)-[:APPEARS_IN]->(PxZ),
+  (Kite)-[:APPEARS_IN]->(PxZ),
+  (BR)-[:APPEARS_IN]->(PxZ),
+  (Jin)-[:APPEARS_IN]->(PxZ),
+  (Xiao)-[:APPEARS_IN]->(PxZ),
+  (Yuri)-[:APPEARS_IN]->(PxZ),
+  (Est)-[:APPEARS_IN]->(PxZ),
+  (Haken)-[:APPEARS_IN]->(EndFron),
+  (Kaguya)-[:APPEARS_IN]->(EndFron),
+  (Kite)-[:APPEARS_IN]->(hack),
+  (BR)-[:APPEARS_IN]->(hack),
+  (Jin)-[:APPEARS_IN]->(Tek),
+  (Xiao)-[:APPEARS_IN]->(Tek),
+  (Yuri)-[:APPEARS_IN]->(ToV),
+  (Est)-[:APPEARS_IN]->(ToV)

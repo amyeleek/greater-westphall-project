@@ -124,9 +124,7 @@ api.getGraph = function() {
 
         rels.push({source, target})
       });
-      console.log(nodes);
-      console.log(rels);
-
+      
       return {nodes, links: rels};
     });
 }

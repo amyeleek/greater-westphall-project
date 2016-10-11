@@ -4,9 +4,19 @@
 	app.searchMedia = function(){
 		var queryString = $("#search").find("input[name=search]").val();
 
-		api.searchDB('Media', queryString);
+		//do something useful here
+		return api.searchNode('Game', queryString);
 	}
 
+	app.showMedia = function(title) {
+	  api
+	    .getMedia(title)
+	    .then(media => {
+	      if (!media) return;
+
+	      console.log(media);
+		});
+	}
 
 	app.renderGraph = function() {
 	  var width = 800, height = 800;
