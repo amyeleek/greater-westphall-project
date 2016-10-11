@@ -14,6 +14,8 @@
 	    .then(media => {
 	      if (!media) return;
 
+		//bring up list of all the data we store about the media - the node, and the nearest neighbours
+		//also run a call to Wikipedia to get anything else useful
 	      console.log(media);
 		});
 	}

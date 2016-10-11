@@ -4,9 +4,10 @@
  var neo4j = window.neo4j.v1;
  var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "fukkinnerds"));
 
+ //returns information about one node, and just that node
  api.searchNode = function(type, queryString) {
   var session = driver.session();
-  var id = type == "Game" ? "title" : "name"
+  var id = type == "Media" ? "title" : "name"
   var query = "MATCH (node:"+ type +") \
       WHERE node."+ id + "=~ {id} \
       RETURN node"
@@ -25,16 +26,12 @@
     });
 }
      
-//need to figure out what I want to do with these 
-api.getMedia = function(title) {
+//returns information about a node and its nearest neighbours
+api.getNode = function(title) {
   var session = driver.session();
   return session
     .run(
-      "MATCH (media:Game {title:{title}}) \
-      OPTIONAL MATCH (media)-[r]-(char:Character) \
-      RETURN media.title AS title, \
-      collect([char.name, char.origin]) AS chars \
-      LIMIT 1", {title})
+      "MATCH (n:Media {title:{title}})-[:APPEARS_IN]-(neighbors) RETURN n, collect(DISTINCT neighbors)", {title: title})
     .then(result => {
       session.close();
 
@@ -42,7 +39,7 @@ api.getMedia = function(title) {
         return null;
 
       var record = result.records[0];
-      return new MediaCast(record.get('title'), record.get('chars'));
+      return new NodeNeighbors(record.get('n'), record.get('collect(DISTINCT neighbors)'));
     })
     .catch(error => {
       session.close();
@@ -50,47 +47,11 @@ api.getMedia = function(title) {
     });
 }
 
-//you get some weird stuff back for this one
-//gonna have to think more about how  to make this one work
-api.getCharacter = function(name) {
-  var session = driver.session();
-  return session
-    .run(
-      "MATCH (n:Character { name: {name} }) \
-      -[:APPEARED_IN*1..3]-(neighbors) \
-       RETURN n, collect(DISTINCT neighbors)", {name})
-    .then(result => {
-      session.close();
+//will probablhy eventually want a function that grabs a node and a subset of the graph
+// 1-5 neighbors, perhaps
+//will need to be a combination of getNode and getGraph
 
-      if (result.records.length == 0)
-        return null;
-
-      var record = result.records[0];
-      console.log(result.records);
-      console.log(record);
-      //return new MediaCast(record.get('title'), record.get('chars'));
-    })
-    .catch(error => {
-      session.close();
-      throw error;
-    });
-}
-
-// MATCH (m:Game)<-[:APPEARED_IN]-(a:Character) \
-//     RETURN m.title AS media, collect(a.name) AS cast \
-//     LIMIT {limit}
-
-/* 
-  Need to refrence later characters back to media
-  Look up what each character's mode is
-  That goes in the rels array
-  Mode should have a number asociated with them? 
-
-  Every new node, look up the mode associated with it
-  Find that mode in the array
-  Push that to the rels array (node, mode's position in array)
-
-*/
+//get EVERYTHING (within limits)
 api.getGraph = function() {
   var session = driver.session();
   return session.run(
@@ -124,7 +85,7 @@ api.getGraph = function() {
 
         rels.push({source, target})
       });
-      
+
       return {nodes, links: rels};
     });
 }
