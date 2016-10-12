@@ -1,8 +1,8 @@
-CREATE (PxZ:Media { title: 'Project X Zone', type: 'Game', released: 2012})
-CREATE (EndFron:Media { title: 'Super Robot Taisen OG Saga: Endless Frontier', type: 'Game', released: 2008})
-CREATE (hack:Media { title: '.hack', type: 'Game', released: 2002})
-CREATE (ToV:Media { title: 'Tales of Vesperia', type: 'Game', released: 2008})
-CREATE (Tek:Media { title: 'Tekken', type: 'Game', released: 1994})
+CREATE (PxZ:Media { name: 'Project X Zone', type: 'Game', released: 2012})
+CREATE (EndFron:Media { name: 'Super Robot Taisen OG Saga: Endless Frontier', type: 'Game', released: 2008})
+CREATE (hack:Media { name: '.hack', type: 'Game', released: 2002})
+CREATE (ToV:Media { name: 'Tales of Vesperia', type: 'Game', released: 2008})
+CREATE (Tek:Media { name: 'Tekken', type: 'Game', released: 1994})
 
 CREATE (Haken:Character { name: 'Haken Browning', origin: 'Endless Frontier'})
 CREATE (Kaguya:Character { name: 'Kaguya Nanbu', origin: 'Endless Frontier'})
@@ -30,3 +30,5 @@ CREATE
   (Xiao)-[:APPEARS_IN]->(Tek),
   (Yuri)-[:APPEARS_IN]->(ToV),
   (Est)-[:APPEARS_IN]->(ToV)
+
+MATCH (a:Media),(m:Character) OPTIONAL MATCH (a)-[r1]-(), (m)-[r2]-() DELETE a,r1,m,r2

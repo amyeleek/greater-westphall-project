@@ -7,9 +7,10 @@
  //returns information about one node, and just that node
  api.getNode = function(type, queryString) {
   var session = driver.session();
-  var id = type == "Media" ? "title" : "name"
+  //set id based on what type is
+  //var id = ((type == "Media") ? "title" : "name");
   var query = "MATCH (node:"+ type +") \
-      WHERE node."+ id + "=~ {id} \
+      WHERE node.name=~ {id} \
       RETURN node"
   return session
     .run(query, {id: '(?i).*' + queryString + '.*'}
@@ -27,11 +28,13 @@
 }
      
 //returns information about a node and its nearest neighbours
-api.getNodeNeighbors = function(title) {
+api.getNodeNeighbors = function(type, name) {
   var session = driver.session();
+
+  var query = "MATCH (node:"+ type +" {name: {name}})-[:APPEARS_IN]-(neighbors) RETURN node, collect(DISTINCT neighbors) as neighbors"
+
   return session
-    .run(
-      "MATCH (node:Media {title:{title}})-[:APPEARS_IN]-(neighbors) RETURN node, collect(DISTINCT neighbors) as neighbors", {title: title})
+    .run(query, {name: name})
     .then(result => {
       session.close();
 
@@ -91,9 +94,9 @@ api.getGraph = function() {
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
       results.records.forEach(res => {
         var node = res.get('node'); 
-        var title = node.properties.name ? node.properties.name : node.properties.title;
-        var insert = {title: title, label: node.labels[0]}
-        var exists = nodes.map(function(e) { return e.title; }).indexOf(insert.title);
+        var name = node.properties.name;
+        var insert = {name: name, label: node.labels[0]}
+        var exists = nodes.map(function(e) { return e.name; }).indexOf(insert.name);
 
         if (exists == -1) {
           nodes.push(insert);
@@ -102,8 +105,8 @@ api.getGraph = function() {
         }
 
         var mode = res.get('mode');
-        var media = {title: mode.properties.title, label: mode.labels[0]};
-        var source = nodes.map(function(e) { return e.title; }).indexOf(media.title);
+        var media = {name: mode.properties.name, label: mode.labels[0]};
+        var source = nodes.map(function(e) { return e.name; }).indexOf(media.name);
         if (source == -1) {
           nodes.push(media);
           source = i;
