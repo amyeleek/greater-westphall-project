@@ -1,16 +1,17 @@
 (function(module){
 	app = {}
 
-	app.searchMedia = function(){
+	app.searchNode = function(){
 		var queryString = $("#search").find("input[name=search]").val();
 
 		//search to find information about one node and pass that to showMedia
-		api.searchNode('Media', queryString).then(node =>{
-			app.showMediaInfo(node);
+		api.getNode('Media', queryString).then(node =>{
+			app.showNodeInfo(node);
+			app.showNodeGraph(node);
 		});
 	}
 
-	app.showMediaInfo = function(node) {
+	app.showNodeInfo = function(node) {
 
 		$results = $('#results');
 		node = node[0];
@@ -19,29 +20,43 @@
 
 		//bring up list of all the data we store about the media - the node, and the nearest neighbours
 		//also run a call to Wikipedia to get anything else useful
-		//https://en.wikipedia.org/w/api.php?action=query&titles=Main%20Page&prop=revisions&rvprop=content&format=json
-	    
-	    $.getJSON("https://en.wikipedia.org/w/api.php?action=query&titles="+node.title+"&prop=revisions&rvprop=content&format=json&callback=?", function(data){
-	    	console.log(data);
-	    })
+		//The wikipedia API is ass. Shelving for now. 
+		//https://github.com/spencermountain/wtf_wikipedia/
+		//consider if we want to store more information, since that's easier to get
+
+	    // $.getJSON("https://en.wikipedia.org/w/api.php?action=query&titles="+node.title+"&prop=revisions&rvprop=content&format=json&callback=?", function(data){
+	    // 	console.log(data);
+	    // })
 
 	}
 
 	//show graph of node and nearest neighbors
-	app.showMediaGraph = function(){}
+	app.showNodeGraph = function(node){
+		node = node[0];
 
-	app.renderGraph = function() {
+		api.getNodeNeighbors(node.title).then(graph =>{
+			app.renderGraph(graph)
+		});
+	}
+
+	app.showFullGraph = function(){
+		api.getGraph().then(graph => {
+	    	app.renderGraph(graph)
+	    });
+	}
+
+	app.renderGraph = function(graph) {
 	  var width = 800, height = 800;
 	  var force = d3.layout.force()
 	    .charge(-200).linkDistance(30).size([width, height]);
+
+	  //clear out any old graphs
+	  d3.select("#graph").selectAll("svg").remove();  
 
 	  var svg = d3.select("#graph").append("svg")
 	    .attr("width", "100%").attr("height", "100%")
 	    .attr("pointer-events", "all");
 
-	  api
-	    .getGraph()
-	    .then(graph => {
 	      force.nodes(graph.nodes).links(graph.links).start();
 
 	      var link = svg.selectAll(".link").data(graph.links).enter().append("line").attr("class", "link");
@@ -79,7 +94,6 @@
 	          return d.y;
 	        });
 	      });
-	    });
 	}
 
 	module.app = app;
