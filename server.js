@@ -20,6 +20,7 @@ mongoose.connect(mongoURI);
 //setup middleware
 app.use(morgan('dev'));
 //setup routes
+
 app.all('*', function(req, res, next){
   debug('404 * route');
   next(httpErrors(404, 'no such route'));

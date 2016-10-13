@@ -2,9 +2,7 @@
 
 const debug = require('debug')('authdemo:auth-controller');
 const httpErrors = require('htp-errors');
-
 const User = require('../model/user');
-
 debug('auth-controller');
 
 exports.signup = function(reqBody){
@@ -14,10 +12,10 @@ exports.signup = function(reqBody){
     let user = new User(reqBody);
     delete reqBody.password;
 
-    user.generateHash(password)
-    .then( user => user.save())
-    .then( user => user.generateToken())
-    .then( token => resolve(token))
+    user.generateHash(password)//first hash the password
+    .then( user => user.save())//save the user t make sure unique username
+    .then( user => user.generateToken())//create token to send to the user
+    .then( token => resolve(token))//resolve token
     .catach( err => reject(httpErrors(400, err.message)));
   });
 };
