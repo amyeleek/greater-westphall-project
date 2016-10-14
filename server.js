@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 //app modules
 const handleError = require('./lib/handle-error');
 // const parserBearerAuth = require('./lib/parse-bearer-auth');
-// const authRouter = require('./route/auth-router');
+const authRouter = require('./route/auth-router');
 // const userRouter = require('./route/user-router');
 const itemRouter = require('./route/item-router');
 //constant module variables
@@ -35,7 +35,7 @@ app.use(handleError);
 //   console.log('req.userId', req.userId);
 //   res.send('HI!');
 // });
-// app.use('/api', authRouter);
+app.use('/api', authRouter);
 // app.use('/api', userRouter);
 app.use('/api', itemRouter);
 //

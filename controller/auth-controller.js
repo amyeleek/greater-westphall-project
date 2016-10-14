@@ -1,7 +1,7 @@
 'use strict';
 
 const debug = require('debug')('authdemo:auth-controller');
-const httpErrors = require('htp-errors');
+const httpErrors = require('http-errors');
 const User = require('../model/user');
 debug('auth-controller');
 
