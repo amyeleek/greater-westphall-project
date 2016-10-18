@@ -2,14 +2,23 @@
 
 const Router = require('express').Router;
 const debug = require('debug')('authdemo:auth-router');
-const jsonParser = require('body-parser');
+const jsonParser = require('body-parser').json();
+const parseBasicAuth = require('../lib/parse-basic-auth');
 
 const authController = require('../controller/auth-controller');
 const authRouter = module.exports = new Router();
 
 authRouter.post('/signup', jsonParser, function(req, res, next){
-  debug('auth-router');
+  debug('POST/signup auth-router');
   authController.signup(req.body)
+  .then( token => res.send(token))
+  .catch(next);
+});
+
+authRouter.get('/signin', jsonParser, parseBasicAuth, function(req, res, next){
+  debug('GET/signin auth-router');
+  console.log('req.auth', req.auth);
+  authController.signin(req.auth)
   .then( token => res.send(token))
   .catch(next);
 });
