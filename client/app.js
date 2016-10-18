@@ -28,7 +28,7 @@
 	      // html title attribute
 	      node.append("title")
 	        .text(d => {
-	          return d.title;
+	          return d.name;
 	        });
 
 	      // force feed algo ticks
@@ -71,6 +71,7 @@
 		var node = node[0],
 			final = node.released ? node.released.low : node.origin;
 
+		//this pretty obviously needs to be way, way more dynamic
 		$results.children('tbody').append('<tr><td>'+ node.name +'</td><td>'+node.type+'</td><td>'+final+'</td></tr>');
 
 		//bring up list of all the data we store about the media - the node, and the nearest neighbours

@@ -28,6 +28,7 @@
 }
      
 //returns information about a node and its nearest neighbours
+//should expand this, really
 api.getNodeNeighbors = function(type, name) {
   var session = driver.session();
 
@@ -81,6 +82,33 @@ api.getNodeNeighbors = function(type, name) {
 //will need to be a combination of getNode and getGraph
 //modify getNode
 
+api.getShortestPath = function(name1, name2){
+  var session = driver.session();
+  var query = "MATCH p=shortestPath((a)-[r*]-(b)) \
+              WHERE a.name = {name1} AND b.name = {name2} \
+              RETURN p"
+  return session
+  .run(query, {name1: name1, name2: name2}
+  )
+  .then(result => {
+    session.close();
+    
+    var record = result.records[0]._fields[0].segments;
+    console.log(record);
+
+    var nodes = [], rels = [], i = 0, target = 0, source = 0;
+    //want to get out the nodes and the links between them 
+    record.forEach(res => {
+
+
+    });
+  })
+  .catch(error => {
+    session.close();
+    throw error;
+  });
+}
+
 //get EVERYTHING (within limits)
 api.getGraph = function() {
   var session = driver.session();
@@ -94,8 +122,7 @@ api.getGraph = function() {
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
       results.records.forEach(res => {
         var node = res.get('node'); 
-        var name = node.properties.name;
-        var insert = {name: name, label: node.labels[0]}
+        var insert = {name: node.properties.name, label: node.labels[0]}
         var exists = nodes.map(function(e) { return e.name; }).indexOf(insert.name);
 
         if (exists == -1) {
