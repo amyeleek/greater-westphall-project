@@ -54,15 +54,19 @@
 	app = {}
 
 	app.searchNode = function(){
-		var queryString = $("#search").find("input[name=search]").val();
-		var type = $("input[name='type']:checked").val();
+		var queryString = $("#search").find("input[name=search]").val(),
+			type = $("input[name='type']:checked").val(),
+			queryString2 = $("#search").find("input[name=search2]").val();
 
 		//search to find information about one node and pass that to showMedia
-
-		api.getNode(type, queryString).then(node =>{
-			app.showNodeInfo(node);
-			app.showNodeGraph(type, node);
-		});
+		if(queryString2 == ""){
+			api.getNode(type, queryString).then(node =>{
+				app.showNodeInfo(node);
+				app.showNodeGraph(type, node);
+			});
+		}else{
+			app.showShortestPath(queryString, queryString2);
+		}
 	}
 
 	app.showNodeInfo = function(node) {
