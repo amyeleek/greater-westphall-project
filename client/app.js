@@ -88,9 +88,7 @@
 
 	//show graph of node and nearest neighbors
 	app.showNodeGraph = function(type, node){
-		var node = node[0];
-
-		api.getNodeNeighbors(type, node.name).then(graph =>{
+		api.getNodeNeighbors(type, node[0].name).then(graph =>{
 			renderGraph(graph)
 		});
 	}
@@ -99,6 +97,12 @@
 		api.getGraph().then(graph => {
 	    	renderGraph(graph)
 	    });
+	}
+
+	app.showShortestPath = function(name1, name2){
+		api.getShortestPath(name1, name2).then(graph => {
+			renderGraph(graph);
+		});
 	}
 
 	module.app = app;

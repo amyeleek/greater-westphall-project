@@ -94,14 +94,36 @@ api.getShortestPath = function(name1, name2){
     session.close();
     
     var record = result.records[0]._fields[0].segments;
-    console.log(record);
 
     var nodes = [], rels = [], i = 0, target = 0, source = 0;
     //want to get out the nodes and the links between them 
     record.forEach(res => {
+        var insertStart = {name: res.start.properties.name, label: res.start.labels[0]},
+            insertEnd = {name: res.end.properties.name, label: res.end.labels[0]},
+            //make function?
+            existsStart = nodes.map(function(e) { return e.name; }).indexOf(insertStart.name),
+            existsEnd = nodes.map(function(e) { return e.name; }).indexOf(insertEnd.name);
 
+        if (existsStart == -1) {
+          nodes.push(insertStart);
+          source = i;
+          i++;
+        }else{
+          source = target;
+        }
+
+        //make this a function?
+        if (existsEnd == -1) {
+          nodes.push(insertEnd);
+          target = i;
+          i++;
+        }
+
+        rels.push({source, target})
 
     });
+
+    return {nodes, links: rels};
   })
   .catch(error => {
     session.close();
