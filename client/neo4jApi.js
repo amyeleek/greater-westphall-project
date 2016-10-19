@@ -5,15 +5,14 @@
  var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "fukkinnerds"));
 
  //returns information about one node, and just that node
- api.getNode = function(type, queryString) {
+ api.getNode = function(name) {
   var session = driver.session();
   //set id based on what type is
   //var id = ((type == "Media") ? "title" : "name");
-  var query = "MATCH (node:"+ type +") \
-      WHERE node.name=~ {id} \
-      RETURN node"
   return session
-    .run(query, {id: '(?i).*' + queryString + '.*'}
+    .run("MATCH (node) \
+      WHERE node.name=~ {name} \
+      RETURN node", {name: '(?i).*' + name + '.*'}
     )
     .then(result => {
       session.close();
@@ -29,13 +28,13 @@
      
 //returns information about a node and its nearest neighbours
 //should expand this, really
-api.getNodeNeighbors = function(type, name) {
+api.getNodeNeighbors = function(name) {
   var session = driver.session();
-
-  var query = "MATCH (node:"+ type +" {name: {name}})-[:APPEARS_IN]-(neighbors) RETURN node, collect(DISTINCT neighbors) as neighbors"
-
   return session
-    .run(query, {name: name})
+    .run("MATCH (node)-[:APPEARS_IN]-(neighbors) \
+          WHERE node.name = {name} \
+          RETURN node, collect(DISTINCT neighbors) as neighbors"
+, {name: name})
     .then(result => {
       session.close();
 
@@ -81,13 +80,14 @@ api.getNodeNeighbors = function(type, name) {
 //will need to be a combination of getNode and getGraph
 //modify getNode
 
+//I'm not sure if only looking up by name will have HORRIBLE CONSEQUENCES later or not
+//it probably will
 api.getShortestPath = function(name1, name2){
   var session = driver.session();
-  var query = "MATCH p=shortestPath((a)-[r*]-(b)) \
-              WHERE a.name = {name1} AND b.name = {name2} \
-              RETURN p"
   return session
-  .run(query, {name1: name1, name2: name2}
+  .run("MATCH p=shortestPath((a)-[r*]-(b)) \
+              WHERE a.name = {name1} AND b.name = {name2} \
+              RETURN p", {name1: name1, name2: name2}
   )
   .then(result => {
     session.close();
