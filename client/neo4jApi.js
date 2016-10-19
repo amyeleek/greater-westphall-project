@@ -48,8 +48,8 @@ api.getNodeNeighbors = function(type, name) {
       //yeah, this needs to be cleaned up
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
       var node = record.get('node'); 
-      var title = node.properties.name ? node.properties.name : node.properties.title;
-      var insert = {title: title, label: node.labels[0]}
+      var name = node.properties.name;
+      var insert = {name: name, label: node.labels[0]}
 
       nodes.push(insert);
       source = i;
@@ -58,8 +58,7 @@ api.getNodeNeighbors = function(type, name) {
 
       var neighbors = record.get('neighbors');
       neighbors.forEach(nNode =>{
-        var title = nNode.properties.name ? nNode.properties.name : nNode.properties.title;
-        var neighbor = {title: title, label: nNode.labels[0]}
+        var neighbor = {name: nNode.properties.name, label: nNode.labels[0]}
 
         nodes.push(neighbor);
         target = i;
