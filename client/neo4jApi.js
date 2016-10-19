@@ -32,9 +32,8 @@ api.getNodeNeighbors = function(name) {
   var session = driver.session();
   return session
     .run("MATCH (node)-[:APPEARS_IN]-(neighbors) \
-          WHERE node.name = {name} \
-          RETURN node, collect(DISTINCT neighbors) as neighbors"
-, {name: name})
+          WHERE node.name =~ {name} \
+          RETURN node, collect(DISTINCT neighbors) as neighbors", {name: '.*' + name + '.*'})
     .then(result => {
       session.close();
 
@@ -46,9 +45,9 @@ api.getNodeNeighbors = function(name) {
       //similar to, but distinct from the stuff in getGraph
       //yeah, this needs to be cleaned up
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
-      var node = record.get('node'); 
-      var name = node.properties.name;
-      var insert = {name: name, label: node.labels[0]}
+      // var node = record.get('node'); 
+      // var name = node.properties.name;
+      var insert =  new Node(record.get('node')); //{name: name, label: node.labels[0]}
 
       nodes.push(insert);
       source = i;
@@ -57,7 +56,7 @@ api.getNodeNeighbors = function(name) {
 
       var neighbors = record.get('neighbors');
       neighbors.forEach(nNode =>{
-        var neighbor = {name: nNode.properties.name, label: nNode.labels[0]}
+        var neighbor = new Node(nNode); //{name: nNode.properties.name, label: nNode.labels[0]}
 
         nodes.push(neighbor);
         target = i;

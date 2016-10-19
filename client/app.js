@@ -20,7 +20,7 @@
 	        .data(graph.nodes).enter()
 	        .append("circle")
 	        .attr("class", d => {
-	          return "node " + d.label
+	          return "node " + d.labels[0] + " " + d.properties.type
 	        })
 	        .attr("r", 10)
 	        .call(force.drag);
@@ -28,7 +28,7 @@
 	      // html title attribute
 	      node.append("title")
 	        .text(d => {
-	          return d.name;
+	          return d.properties.name;
 	        });
 
 	      // force feed algo ticks
@@ -60,9 +60,9 @@
 
 		//search to find information about one node and pass that to showMedia
 		if(queryString2 == ""){
-			api.getNode(type, queryString).then(node =>{
+			api.getNode(queryString).then(node =>{
 				app.showNodeInfo(node);
-				app.showNodeGraph(type, node);
+				app.showNodeGraph(node);
 			});
 		}else{
 			app.showShortestPath(queryString, queryString2);
@@ -91,8 +91,8 @@
 	}
 
 	//show graph of node and nearest neighbors
-	app.showNodeGraph = function(type, node){
-		api.getNodeNeighbors(type, node[0].name).then(graph =>{
+	app.showNodeGraph = function(node){
+		api.getNodeNeighbors(node[0].properties.name).then(graph =>{
 			renderGraph(graph)
 		});
 	}
