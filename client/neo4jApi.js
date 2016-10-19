@@ -1,4 +1,11 @@
 (function(module){
+
+  function checkExists(nodes, item){
+   return nodes.map(function(e) { 
+     return e.properties.name; 
+   }).indexOf(item.properties.name);
+  }
+
  var api = {};
 
  var neo4j = window.neo4j.v1;
@@ -96,11 +103,10 @@ api.getShortestPath = function(name1, name2){
     var nodes = [], rels = [], i = 0, target = 0, source = 0;
     //want to get out the nodes and the links between them 
     record.forEach(res => {
-        var insertStart = {name: res.start.properties.name, label: res.start.labels[0]},
-            insertEnd = {name: res.end.properties.name, label: res.end.labels[0]},
-            //make function?
-            existsStart = nodes.map(function(e) { return e.name; }).indexOf(insertStart.name),
-            existsEnd = nodes.map(function(e) { return e.name; }).indexOf(insertEnd.name);
+        var insertStart = new Node(res.start), 
+            insertEnd = new Node(res.end),
+            existsStart = checkExists(nodes, insertStart);
+            existsEnd = checkExists(nodes, insertEnd);
 
         if (existsStart == -1) {
           nodes.push(insertStart);
@@ -141,20 +147,18 @@ api.getGraph = function() {
       session.close();
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
       results.records.forEach(res => {
-        var node = res.get('node'); 
-        var insert = {name: node.properties.name, label: node.labels[0]}
-        var exists = nodes.map(function(e) { return e.name; }).indexOf(insert.name);
+        var insert = new Node(res.get('node')),
+            existsNode = checkExists(nodes, insert),
+            media = new Node(res.get('mode')),
+            existsMedia = checkExists(nodes, media)
 
-        if (exists == -1) {
+        if (existsNode == -1) {
           nodes.push(insert);
           target = i;
           i++;
         }
 
-        var mode = res.get('mode');
-        var media = {name: mode.properties.name, label: mode.labels[0]};
-        var source = nodes.map(function(e) { return e.name; }).indexOf(media.name);
-        if (source == -1) {
+        if (existsMedia == -1) {
           nodes.push(media);
           source = i;
           i++;
