@@ -156,12 +156,16 @@ api.getGraph = function() {
           nodes.push(insert);
           target = i;
           i++;
+        }else{
+          target = existsNode;
         }
 
         if (existsMedia == -1) {
           nodes.push(media);
           source = i;
           i++;
+        }else{
+          source = existsMedia;
         }
 
         rels.push({source, target})
