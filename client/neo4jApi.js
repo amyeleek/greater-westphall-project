@@ -5,6 +5,7 @@
  var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "fukkinnerds"));
 
  //returns information about one node, and just that node
+ //currently not used, but keeping it around just in case
  api.getNode = function(name) {
   var session = driver.session();
   //set id based on what type is
@@ -45,9 +46,8 @@ api.getNodeNeighbors = function(name) {
       //similar to, but distinct from the stuff in getGraph
       //yeah, this needs to be cleaned up
       var nodes = [], rels = [], i = 0, target = 0, source = 0;
-      // var node = record.get('node'); 
-      // var name = node.properties.name;
-      var insert =  new Node(record.get('node')); //{name: name, label: node.labels[0]}
+
+      var insert =  new Node(record.get('node')); 
 
       nodes.push(insert);
       source = i;
@@ -56,7 +56,7 @@ api.getNodeNeighbors = function(name) {
 
       var neighbors = record.get('neighbors');
       neighbors.forEach(nNode =>{
-        var neighbor = new Node(nNode); //{name: nNode.properties.name, label: nNode.labels[0]}
+        var neighbor = new Node(nNode); 
 
         nodes.push(neighbor);
         target = i;

@@ -51,32 +51,14 @@
 	      });
 	}
 
-	app = {}
-
-	app.searchNode = function(){
-		var queryString = $("#search").find("input[name=search]").val(),
-			type = $("input[name='type']:checked").val(),
-			queryString2 = $("#search").find("input[name=search2]").val();
-
-		//search to find information about one node and pass that to showMedia
-		if(queryString2 == ""){
-			api.getNode(queryString).then(node =>{
-				app.showNodeInfo(node);
-				app.showNodeGraph(node);
-			});
-		}else{
-			app.showShortestPath(queryString, queryString2);
-		}
-	}
-
-	app.showNodeInfo = function(node) {
+	function renderNodeInfo(node) {
 
 		$results = $('#results');
-		var node = node[0],
-			final = node.released ? node.released.low : node.origin;
+		var final = node.properties.released ? node.proeprties.released.low : node.properties.origin;
 
 		//this pretty obviously needs to be way, way more dynamic
-		$results.children('tbody').append('<tr><td>'+ node.name +'</td><td>'+node.type+'</td><td>'+final+'</td></tr>');
+		//how about show the info for all the neighbors as well? 
+		$results.children('tbody').append('<tr><td>'+ node.properties.name +'</td><td>'+node.properties.type+'</td><td>'+final+'</td></tr>');
 
 		//bring up list of all the data we store about the media - the node, and the nearest neighbours
 		//also run a call to Wikipedia to get anything else useful
@@ -90,12 +72,30 @@
 
 	}
 
-	//show graph of node and nearest neighbors
-	app.showNodeGraph = function(node){
-		api.getNodeNeighbors(node[0].properties.name).then(graph =>{
-			renderGraph(graph)
-		});
+	app = {}
+
+	app.searchNode = function(){
+		var queryString = $("#search").find("input[name=search]").val(),
+			type = $("input[name='type']:checked").val(),
+			queryString2 = $("#search").find("input[name=search2]").val();
+
+		//search to find information about one node and pass that to showMedia
+		if(queryString2 == ""){
+			api.getNodeNeighbors(queryString).then(graph =>{
+				renderNodeInfo(graph.nodes[0]);
+				renderGraph(graph);
+			});
+		}else{
+			app.showShortestPath(queryString, queryString2);
+		}
 	}
+
+	//show graph of node and nearest neighbors
+	// app.showNodeGraph = function(node){
+	// 	api.getNodeNeighbors(node[0].properties.name).then(graph =>{
+	// 		renderGraph(graph)
+	// 	});
+	// }
 
 	app.showFullGraph = function(){
 		api.getGraph().then(graph => {
