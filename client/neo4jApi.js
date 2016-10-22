@@ -83,8 +83,6 @@ api.getNodeNeighbors = function(name) {
 
 //will probablhy eventually want a function that grabs a node and a subset of the graph
 // 1-5 neighbors, perhaps
-//will need to be a combination of getNode and getGraph
-//modify getNode
 
 //I'm not sure if only looking up by name will have HORRIBLE CONSEQUENCES later or not
 //it probably will
@@ -101,7 +99,21 @@ api.getShortestPath = function(name1, name2){
     var record = result.records[0]._fields[0].segments;
 
     var nodes = [], rels = [], i = 0, target = 0, source = 0;
-    //want to get out the nodes and the links between them 
+
+    //if the first one is a character, look up their originating media
+    //this will probably lead to problems but we'll cross that bridge when we come to it
+    if(record[0].start.properties.origin){
+      nodes.push({
+                    properties:{
+                                  name: record[0].start.properties.origin, 
+                                  type: "Media"
+                                },
+                    labels: []
+                  });
+      rels.push({source: 0, target: 1});
+      i++;
+    }
+
     record.forEach(res => {
         var insertStart = new Node(res.start), 
             insertEnd = new Node(res.end),
