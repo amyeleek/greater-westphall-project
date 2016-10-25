@@ -187,6 +187,46 @@ api.getGraph = function() {
     });
 }
 
+//want to only create nodes with a connection
+//split up to creating nodes and relationships
+//USE FUNCTION CURRYING TO DETERMINE IF IT'S CHARACTER OR MEDIA 
+//I'M SO SMART
+//bundle up all options into args
+
+// CREATE (PxZ:Media { name: 'Project X Zone', type: 'Game', released: 2012})
+// CREATE (Haken:Character { name: 'Haken Browning', origin: 'Endless Frontier'})
+api.createNode = function(type, name, args){
+  if(type === 'Media') { 
+    createMediaNode(name, args);
+  }else{
+    createCharacterNode(name, args);
+  }
+}
+
+api.createRelationships = function(name, args){
+
+}
+
+function createMediaNode(name, args){
+  var session = driver.session();
+  return session.run(
+    "CREATE (node:Media {name: {name}, type: {type}, released: {date}})",
+    {name: name, type: args.type, date: args.date})
+  .then(results => {
+    session.close();
+  })
+}
+
+function createCharacterNode(name, args){
+  var session = driver.session();
+  return session.run(
+    "CREATE (node:Character {name: {name}, origin: {origin}})",
+    {name: name, origin: args.origin})
+  .then(results => {
+    session.close();
+  })
+}
+
 module.api = api;
 
 })(window)
