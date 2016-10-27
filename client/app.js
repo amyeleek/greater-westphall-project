@@ -73,6 +73,9 @@
 	}
 
 	app = {}
+	
+	//for checking on creation
+	app.nodes = [];
 
 	app.searchNode = function(){
 		var queryString = $("#search").find("input[name=search]").val(),
@@ -99,6 +102,7 @@
 
 	app.showFullGraph = function(){
 		api.getGraph().then(graph => {
+			app.nodes = graph.nodes;
 	    	renderGraph(graph)
 	    });
 	}
