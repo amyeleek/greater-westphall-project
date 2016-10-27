@@ -189,21 +189,41 @@ api.getGraph = function() {
 
 //want to only create nodes with a connection
 //split up to creating nodes and relationships
-//USE FUNCTION CURRYING TO DETERMINE IF IT'S CHARACTER OR MEDIA 
-//I'M SO SMART
-//bundle up all options into args
 
-// CREATE (PxZ:Media { name: 'Project X Zone', type: 'Game', released: 2012})
-// CREATE (Haken:Character { name: 'Haken Browning', origin: 'Endless Frontier'})
-api.createNode = function(type, name, args){
+//on the frontend, only allow creation after clicking on a node and automatically filling in the first rel
+api.createNode = function(type, name, nodeArgs){
+  if(typeof rels === "undefined") return null;
+
   if(type === 'Media') { 
-    createMediaNode(name, args);
+    createMediaNode(name, nodeArgs);
   }else{
-    createCharacterNode(name, args);
+    createCharacterNode(name, nodeArgs);
   }
 }
 
-api.createRelationships = function(name, args){
+//might have to create more nodes to have relationships
+//on frontend, check if each name is already in db through getNode? (might be costly)
+//first check if we already have something on the graph, since fullGraph should run on startup
+//cache everything on fullGraph, check if those names are in when someone enters
+//if no, open a required thing to input other data, make those new nodes
+api.createRelationships = function(type, name, rels){
+
+  //directions always go (character) -> (canon), which we show here
+  var direction = ((type === "Media") ? ["<", ""] : ["", ">"]);
+
+  rels.forEach(rel => {
+    var session = driver.session();
+
+    session.run(
+      "MATCH (a), (b) \
+      WHERE a.name = {name1} and b.name = {name2} \
+      CREATE (a)" + direction[0] + "-[:APPEARS_IN]-" + direction[1] + "(b)",
+      {name1: name, name2: rel})
+    .then(results => {
+      session.close();
+      console.log(results);
+    })
+  });
 
 }
 
