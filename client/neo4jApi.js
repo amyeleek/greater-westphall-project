@@ -192,8 +192,6 @@ api.getGraph = function() {
 
 //on the frontend, only allow creation after clicking on a node and automatically filling in the first rel
 api.createNode = function(type, name, nodeArgs){
-  if(typeof rels === "undefined") return null;
-
   if(type === 'Media') { 
     createMediaNode(name, nodeArgs);
   }else{
@@ -245,6 +243,29 @@ function createCharacterNode(name, args){
   .then(results => {
     session.close();
   })
+}
+
+api.deleteNode = function(name){
+  var session = driver.session();
+  return session
+  .run("MATCH (a)-[r]-(b) \
+              WHERE a.name = {name} \
+              DELETE a, r ", {name: name}
+  ).then(results => {
+    session.close();
+  });
+}
+
+//delete the relationship between two nodes
+api.deleteRelationship = function(name1, name2){
+  var session = driver.session();
+  return session
+  .run("MATCH (a)-[r]-(b) \
+              WHERE a.name = {name1} AND b.name = {name2} \
+              DELETE r ", {name1: name1, name2: name2}
+  ).then(results => {
+    session.close();
+  });
 }
 
 module.api = api;
