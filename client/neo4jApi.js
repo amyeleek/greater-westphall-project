@@ -87,6 +87,8 @@ api.getNodeNeighbors = function(name) {
 //I'm not sure if only looking up by name will have HORRIBLE CONSEQUENCES later or not
 //it probably will
 api.getShortestPath = function(name1, name2){
+  if(api.getShortestPath.arguments.length < 2) return null
+
   var session = driver.session();
   return session
   .run("MATCH p=shortestPath((a)-[r*]-(b)) \
@@ -192,11 +194,33 @@ api.getGraph = function() {
 
 //on the frontend, only allow creation after clicking on a node and automatically filling in the first rel
 api.createNode = function(type, name, nodeArgs){
+  if(api.createNode.arguments.length < 3) return null
+
   if(type === 'Media') { 
     createMediaNode(name, nodeArgs);
   }else{
     createCharacterNode(name, nodeArgs);
   }
+}
+
+function createMediaNode(name, args){
+  var session = driver.session();
+  return session.run(
+    "CREATE (node:Media {name: {name}, type: {type}, released: {date}})",
+    {name: name, type: args.type, date: args.date})
+  .then(
+    session.close();
+  )
+}
+
+function createCharacterNode(name, args){
+  var session = driver.session();
+  return session.run(
+    "CREATE (node:Character {name: {name}, origin: {origin}})",
+    {name: name, origin: args.origin})
+  .then(
+    session.close();
+  )
 }
 
 //might have to create more nodes to have relationships
@@ -205,6 +229,7 @@ api.createNode = function(type, name, nodeArgs){
 //cache everything on fullGraph, check if those names are in when someone enters
 //if no, open a required thing to input other data, make those new nodes
 api.createRelationships = function(type, name, rels){
+  if(api.createRelationships.arguments.length < 3) return null
 
   //directions always go (character) -> (canon), which we show here
   var direction = ((type === "Media") ? ["<", ""] : ["", ">"]);
@@ -217,32 +242,11 @@ api.createRelationships = function(type, name, rels){
       WHERE a.name = {name1} and b.name = {name2} \
       CREATE (a)" + direction[0] + "-[:APPEARS_IN]-" + direction[1] + "(b)",
       {name1: name, name2: rel})
-    .then(results => {
+    .then(
       session.close();
-      console.log(results);
-    })
+    )
   });
 
-}
-
-function createMediaNode(name, args){
-  var session = driver.session();
-  return session.run(
-    "CREATE (node:Media {name: {name}, type: {type}, released: {date}})",
-    {name: name, type: args.type, date: args.date})
-  .then(results => {
-    session.close();
-  })
-}
-
-function createCharacterNode(name, args){
-  var session = driver.session();
-  return session.run(
-    "CREATE (node:Character {name: {name}, origin: {origin}})",
-    {name: name, origin: args.origin})
-  .then(results => {
-    session.close();
-  })
 }
 
 api.deleteNode = function(name){
@@ -251,21 +255,23 @@ api.deleteNode = function(name){
   .run("MATCH (a)-[r]-(b) \
               WHERE a.name = {name} \
               DELETE a, r ", {name: name}
-  ).then(results => {
+  ).then(
     session.close();
-  });
+  );
 }
 
 //delete the relationship between two nodes
 api.deleteRelationship = function(name1, name2){
+  if(api.deleteRelationship.arguments.length < 2) return null
+
   var session = driver.session();
   return session
   .run("MATCH (a)-[r]-(b) \
               WHERE a.name = {name1} AND b.name = {name2} \
               DELETE r ", {name1: name1, name2: name2}
-  ).then(results => {
+  ).then(
     session.close();
-  });
+  );
 }
 
 module.api = api;
