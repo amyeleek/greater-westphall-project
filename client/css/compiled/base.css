@@ -5,6 +5,9 @@
 .node.Media {
   fill: #888; }
 
+.node.Game {
+  fill: green; }
+
 .node.Character {
   fill: #BBB; }
 

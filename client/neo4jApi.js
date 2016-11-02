@@ -208,9 +208,9 @@ function createMediaNode(name, args){
   return session.run(
     "CREATE (node:Media {name: {name}, type: {type}, released: {date}})",
     {name: name, type: args.type, date: args.date})
-  .then(
+  .then(results => {
     session.close();
-  )
+  })
 }
 
 function createCharacterNode(name, args){
@@ -218,9 +218,9 @@ function createCharacterNode(name, args){
   return session.run(
     "CREATE (node:Character {name: {name}, origin: {origin}})",
     {name: name, origin: args.origin})
-  .then(
+  .then(results => {
     session.close();
-  )
+  })
 }
 
 //might have to create more nodes to have relationships
@@ -242,9 +242,9 @@ api.createRelationships = function(type, name, rels){
       WHERE a.name = {name1} and b.name = {name2} \
       CREATE (a)" + direction[0] + "-[:APPEARS_IN]-" + direction[1] + "(b)",
       {name1: name, name2: rel})
-    .then(
+    .then(results => {
       session.close();
-    )
+    })
   });
 
 }
@@ -255,9 +255,9 @@ api.deleteNode = function(name){
   .run("MATCH (a)-[r]-(b) \
               WHERE a.name = {name} \
               DELETE a, r ", {name: name}
-  ).then(
+  ).then(results => {
     session.close();
-  );
+  });
 }
 
 //delete the relationship between two nodes
@@ -269,9 +269,9 @@ api.deleteRelationship = function(name1, name2){
   .run("MATCH (a)-[r]-(b) \
               WHERE a.name = {name1} AND b.name = {name2} \
               DELETE r ", {name1: name1, name2: name2}
-  ).then(
+  ).then(results => {
     session.close();
-  );
+  });
 }
 
 module.api = api;

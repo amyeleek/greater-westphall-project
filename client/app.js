@@ -49,16 +49,29 @@
 	          return d.y;
 	        });
 	      });
+
+       //    force.selectAll("circle.node").on("click", function(){
+       //  	d3.select(this).attr('r', 25)
+       //      	.style("fill","lightcoral")
+       //      	.style("stroke","red");
+    	  // });
 	}
 
 	function renderNodeInfo(node) {
 
 		$results = $('#results');
-		var final = node.properties.released ? node.proeprties.released.low : node.properties.origin;
 
-		//this pretty obviously needs to be way, way more dynamic
+		//WOW LOOK AT THIS GARBAGE
+		//redo this in something better at some point. Like React or something
+		if(node.labels[0] === "Media"){
+			$results.children('thead').append('<tr><th>Title</th><th>Type</th><th>Released</th></tr>');
+			$results.children('tbody').append('<tr><td>'+ node.properties.name +'</td><td>'+node.properties.type+'</td><td>'+node.properties.released.low+'</td></tr>');
+		}else{
+			$results.children('thead').append('<tr><th>Name</th><th>Origin</th></tr>');
+			$results.children('tbody').append('<tr><td>'+ node.properties.name +'</td><td>'+node.properties.origin+'</td><td>');
+		}
+		
 		//how about show the info for all the neighbors as well? 
-		$results.children('tbody').append('<tr><td>'+ node.properties.name +'</td><td>'+node.properties.type+'</td><td>'+final+'</td></tr>');
 
 		//bring up list of all the data we store about the media - the node, and the nearest neighbours
 		//also run a call to Wikipedia to get anything else useful
