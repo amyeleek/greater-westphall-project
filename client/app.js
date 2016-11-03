@@ -23,6 +23,7 @@
 	          return "node " + d.labels[0] + " " + d.properties.type
 	        })
 	        .attr("r", 10)
+	        .on('click', click)
 	        .call(force.drag);
 
 	      // html title attribute
@@ -49,12 +50,10 @@
 	          return d.y;
 	        });
 	      });
+	}
 
-       //    force.selectAll("circle.node").on("click", function(){
-       //  	d3.select(this).attr('r', 25)
-       //      	.style("fill","lightcoral")
-       //      	.style("stroke","red");
-    	  // });
+	function click(node){
+		app.showNodeNeighbors(node.properties.name);
 	}
 
 	function renderNodeInfo(node) {
@@ -97,10 +96,7 @@
 
 		//search to find information about one node and pass that to showMedia
 		if(queryString2 == ""){
-			api.getNodeNeighbors(queryString).then(graph =>{
-				renderNodeInfo(graph.nodes[0]);
-				renderGraph(graph);
-			});
+			app.showNodeNeighbors(queryString);
 		}else{
 			app.showShortestPath(queryString, queryString2);
 		}
@@ -120,7 +116,15 @@
 	    });
 	}
 
+	app.showNodeNeighbors = function(name){
+		api.getNodeNeighbors(name).then(graph =>{
+			renderNodeInfo(graph.nodes[0]);
+			renderGraph(graph);
+		});
+	}
+
 	app.showShortestPath = function(name1, name2){
+		//throw in a call to renderNodeInfo here too
 		api.getShortestPath(name1, name2).then(graph => {
 			renderGraph(graph);
 		});
